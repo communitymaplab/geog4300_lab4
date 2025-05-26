@@ -13,98 +13,123 @@ library(tidyverse)
 ## One and two sample difference tests
 
 **Overview:**
-This lab continues work with the CPS dataset you used in Lab 3. You'll be conducting normality tests, statistical tests of difference, and chi square tests to analyze these data.
+In this lab, you'll be doing analysis with public use microdata from the Household Pulse survey administered by the U.S. Census Bureau during the COVID pandemic. The survey had a particular focus on pandemic effects on health and wellbeing, but it also included questions on the impact of natural disasters on households. That's the section you'll be focusing on here. 
 
-###Part 1: Testing the normality of the EARNWEEK variable
+Unlike the census data you're probably used to, microdata provides anonymized individual level responses that researchers can use to calculate their own aggregate statistics.
 
-We're going to look at the variable for average weekly income: EARNWEEK. Load the IPMUS CPS dataset in this repository using read_csv. Filter these data so you have only valid responses, removing any observations with a value of 9999.99. Now let's test the normality of this variable.
+There's more info on the Pulse survey and the public use microdata file at this link:
 
-**Question 1** _Load the CPS data and filter it to only valid responses._
+* https://www.census.gov/programs-surveys/household-pulse-survey/data/datasets.html
 
-```{r}
+The main data are contained in the `pulse_2023` csv file in the data folder. The data dictionary for this dataset is also available in the data folder.
+
+You'll use this data to answer two research questions:
+
+* Did households displaced by natural disasters include more children than those not displaced? 
+* Is there a relationship between household income and a household's ability to return to its place of residence after being displaced? 
+
+## Assessment criteria
+For the lab to be marked as complete, the following criteria must be met:
+
+* Criteria 1: Your responses will show an ability to filter survey data for appropriate responses. (Tasks 1 and 7)
+* Criteria 2: Your responses will demonstrate that you can test a variable for normality and decide on the appropriate statistical test. (Tasks 2, 3, and 4)
+* Criteria 3: Your responses will show your ability to correctly use two-sample tests of difference and chi-square tests. (Tasks 5, 6, 9, and 10)
+* Criteria 4: Your responses will accurately and descriptively interpret the results of your statistical tests and explain their significance. (Tasks 7 and 11)
+
+###Part 1: Loading/filtering data and checking for normality.
+
+In the first part of the lab, you'll be using two variables: THHLD_NUMKID (number of children in a household) and ND_DISPLACE (whether a household was displaced by a natural disaster in the last year). 
+
+Load the dataset using read_csv, and also take a look at the two variables of interest in the data dictionary. For this lab, you only want observations with *valid responses*--filtering out any where there were no answers. Filter these data so you have only valid responses. 
+
+**Task 1** _Load the Pulse data and filter it to only valid responses._
+
+```{r Task1}
 #Code here
 
 ```
 
+You'll be doing a two sample test of difference to look at whether the number of children differs between those displaced and not displaced. To know which test to use, you have to assess the normality of the THHLD_NUMKID variable. 
 
-**Question 2** _To assess the normality of the EARNWEEK variable, you create a random sample of 5,000 records using the `slice_sample` function (look it up in help for more information). That's because the Shapiro-Wilk test can't handle more than 5,000 records. Create that sample using `slice_sample` and then do the following: 1) Perform a Shapiro-Wilk normality test on this variable. 2) Create a Q-Q plot with a line showing the normal distribution. 3) Create a histogram using ggplot or the base R function._
+To do so, create a random sample of 5,000 records using the `slice_sample` function (look it up in help for more information). That's because the Shapiro-Wilk test can't handle more than 5,000 records. Create that sample using `slice_sample` and then do the following: 1) Perform a Shapiro-Wilk normality test on this variable. 2) Create a Q-Q plot with a line showing the normal distribution. 3) Create a histogram using ggplot or the base R function.
 
-```{r}
+**Task 2** _Create a random 5,000 record sample from the Pulse dataset. Then run a Shapiro-Wilk normality test, create a QQ plot with a line showing normality, and create a histogram._
+
+```{r Task2}
 #Code here.
 
 ```
 
 
-**Question 3** _Based on the results you saw in question 2, is this variable normally distributed? How do each of those three tests inform your decision?_
+**Task2 3** _Based on the results you saw in question 2, is the THHLD_NUMKID variable normally distributed? How do each of those three tests inform your decision?_
 
 {Your response here}
 
-###Part 2: Testing the differences between states###
+###Part 2: Testing the difference in number of children.###
 
-Based on the results of the previous questions, test whether the incomes of survey respondents in Atlanta (METAREA code 521) and Chicago (1605) metropolitan areas were equal or different.
+Now you can test whether the number of children is different in between displaced and non-displaced households.
 
-**Question 4** _Based on the normality of the data, what is the appropriate statistical test for determining if actual household incomes between these cities are significantly different (p=0.05)? Explain why this test is appropriate and give a null and alternative hypothesis for this test_
-
-{Your response here.}
-
-**Question 5** _Run the test you identified in question 4. Be sure to use the FULL sample for both cities (not the smaller sample from Question 2). Also identify the mean and median values for each dataset, which you can use to determine the nature of the difference--which city (if any) has higher incomes._
-
-```{r}
-#Code goes here
-```
-
-**Question 6** _Interpret the results of the analysis you did in question 4. Do you reject the null hypothesis? Why or why not? What can we say about household incomes in these two metros, focusing on the significance of the test result and the actual difference in means/medians?_
+**Task 4** _Based on the normality of the data, what is the appropriate statistical test for determining if the actual number of children differs between these two groups? Explain why this test is appropriate and give a null and alternative hypothesis for this test_
 
 {Your response here.}
 
-###Part 3: Analyzing differences in rates for use of food assistance
+**Task 5** _Run the test you identified in question 4. Be sure to use the FULL sample for this test (not the smaller sample from Question 2). Also calculate the mean for each dataset, which you can use to determine the nature of the difference--which group (if any) has more children._
 
-While the U.S. Census regularly provides data on use of SNAP/Food stamp benefits, the CPS provides data on other emergency food sources. Here, you will look at use of emergency food from a church, food pantry, or food bank over the last year (FSFDBNK) in New York, New Jersey, and Pennsylvania.
-
-**Question 7** _Reload the original CPS dataset (so that you're not filtering out based on EARNWEEK as you did in question 1). Now filter for records with valid responses to FSFDBNK (<6 on the scale) that are in the states listed above. Call the head of the table with kable when done_
-
-```{r}
-#Code goes here.
-```
-
-**Question 8** _Create a contingency table of responses to the FSFDBNK variable by state. This should show the number of observations in each category for each state. In addition, calculate the percentage of the population that used food pantries at all in the last year (categories 2-5) for each state._
-
-```{r}
-#Code goes here.
-```
-
-**Question 9** _Identify if there are statistically significant differences between these states by conducting a chi square test on the contingency table in question 8. What were your null and alternative hypotheses for the chi square test? Do you reject the null hypothesis based on these results? Why or why not?_
-
-```{r}
+```{r Task5}
 #Code goes here
 ```
 
+**Task 6** _Interpret the results of the analysis you did in task 5. Do you reject the null hypothesis? Why or why not? What can we say about any difference in the number of children in these two groups, focusing on the significance of the test result and the difference in means within this sample?_
 
-{Response goes here.}
+{Your response here.}
 
-**Question 10** _Based on the results of your analysis in questions 8 and 9, what conclusions can you make about food bank usage? Refer to the actual differences in rates between states as well as the significance of the chi-square test in your interpretation._
+###Part 3: Identifying differences in time displaced by natural disasters across income groups
+
+In Part 2, you used a test of difference that included a continuous and categorical variable. In this section, you'll focus only on households displaced by natural disasters to identify statistically significant differences in time displaced using two categorical variables: one placing responses into groups by income (INCOME) and the other showing the time displaced (ND_HOWLONG). Again, look at the data dictionary to better understand how these two variables are structured.
+
+**Task 7** _Reload the original, unfiltered Pulse dataset (not the one you used in parts 1 and 2). Select only observations for households displaced by a natural disaster using the ND_DISPLACE variable. Then filter for records with valid responses to INCOME and ND_HOWLONG. Call the head of the table with `kable` when done_
+
+```{r Task7}
+#Code goes here.
+```
+
+**Task 8** _Create a contingency table of responses to the ND_HOWLONG variable by INCOME. The rows of this table should be the income groups and the columns should be the categorical variables showing time displaced. Call the table when you are done._
+
+```{r Task8}
+#Code goes here.
+```
+
+**Task 9** _Identify if there are statistically significant differences in displacement time between these income groups by conducting a chi square test on the contingency table in task 8. You'll likely need to delete the INCOME variable to do so._ 
+
+```{r Task9}
+#Code goes here
+```
+
+**Task 10** _To help with your interpretation of results, convert the contingency table in Task 8 from one that shows the number of responses to one that shows the percentage of responses within each income group. So in each row, the number should show the percentage of responses in that income group that selected that response for ND_HOWLONG._
+
+```{r Task10}
+#Your code goes here
+```
+
+**Question 11** _Interpret the results of your analysis in tasks 9 and 10. What were your null and alternative hypotheses for the chi square test? Do you reject the null hypothesis based on these results and why (or why not)? What does the table in task 9 tell you about any differences in displacement across income groups?_
 
 {Response goes here.}
 
 ###Challenge question:
-Pick one other variable from this CPS dataset and create an appropriate state level estimate. This will probably involve calculating a rate (e.g., % immigrant) or average (e.g., mean year of immigration).  Map out your estimate using the states_albers geopackage file in the data folder for this lab. 
+Pick a variable of interest from the pulse dataset and create an appropriate state level estimate for it using the EST_ST variable, which is the state FIPS code. For example, you could look at the percentage of the population displaced (ND_DISPLACE) by state. Or you could map where displacement by flooding was most common using the ND_TYPE2 variable. 
+
+Once you've calculated that estimate, map it out using the `states_albers` geopackage file in the data folder for this lab. 
 
 ```{r}
 #Code goes here
 ```
 
-Pick two states and test whether they statistically differ with regards to the variable you created. This will mean testing the normality of the variable, running the appropriate difference test, and interpreting the results. In addition to your code, write a short description of your process, explaining what your results show and why you used the test you did.
+### Final submission stuff
 
-```{r}
-#Code goes here
-```
-
-{Explanation goes here.}
-
-**Disclosure of assistance:** _Besides class materials, what other sources of assistance did you use while completing this lab? These can include input from classmates, relevant material identified through web searches (e.g., Stack Overflow), or assistance from ChatGPT or other AI tools. How did these sources support your own learning in completing this lab?_
+**Disclosure of assistance:** Besides class materials, what other sources of assistance did you use while completing this lab? These can include input from classmates, relevant material identified through web searches (e.g., Stack Overflow), or assistance from ChatGPT or other AI tools. How did these sources support your own learning in completing this lab?
 
 {Response here.}
 
-**Lab reflection:** _How do you feel about the work you did on this lab? Was it easy, moderate, or hard? What were the biggest things you learned by completing it?_
+**Lab reflection:** How do you feel about the work you did on this lab? Was it easy, moderate, or hard? What are the biggest things you learned by completing it?
 
-{Explanation goes here.}
+{Your response here}
